@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  numbers-database:
+    build: ./database
+    container_name: numbers-db
+    env_file: .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  numbers-app-server:
+    build: ./app-server
+    container_name: app-server
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - numbers-database
+    networks:
+      - app-network
+
+  numbers-web-server:
+    build: ./web-server
+    container_name: web-server
+    environment:
+      - APP_SERVER_URL=http://app-server:8000
+    ports:
+      - "6000:5000"
+    depends_on:
+      - numbers-app-server
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
