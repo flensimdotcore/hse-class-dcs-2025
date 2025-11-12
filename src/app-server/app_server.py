@@ -2,10 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import logging
 import os
-from sqlalchemy import create_engine, text, Column, Integer, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
 import time
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
