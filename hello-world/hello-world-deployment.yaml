@@ -19,9 +19,9 @@ spec:
         kubernetes.io/hostname: node-12
       containers:
       - name: hello-world
-        image: nginx:alpine
-        ports:
-        - containerPort: 80
+        image: alpine:latest
         env:
         - name: MESSAGE
           value: "Hello, World!"
+        command: ["/bin/sh"]
+        args: ["-c", 'while true; do echo "$MESSAGE"; sleep 30; done']
