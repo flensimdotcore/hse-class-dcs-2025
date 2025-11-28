@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-12-database
+  namespace: ns-12
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-12-database
+  template:
+    metadata:
+      labels:
+        app: app-12-database
+    spec:
+      # nodeSelector:
+      #   kubernetes.io/hostname: node-12
+      containers:
+      - name: postgres
+        image: postgres:13
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: app-12-secrets
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-12-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-12-secrets
+              key: POSTGRES_PASSWORD
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+        - name: init-sql
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: postgres-12-pvc
+      - name: init-sql
+        configMap:
+          name: app-12-config
+          items:
+          - key: INIT_SQL
+            path: init.sql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-12-database
+  namespace: ns-12
+spec:
+  selector:
+    app: app-12-database
+  ports:
+  - port: 5432
+    targetPort: 5432
+  clusterIP: None
