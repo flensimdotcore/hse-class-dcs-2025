@@ -24,5 +24,14 @@ jobs:
         context: ./src/app-server/
         push: true
         tags: |
-          flensimdotcore/dcs-2025-2nd-achievement:latest
-          flensimdotcore/dcs-2025-2nd-achievement:${{ github.sha }}
+          flensimdotcore/dcs-2025-2nd-achievement-app-server:latest
+          flensimdotcore/dcs-2025-2nd-achievement-app-server:${{ github.sha }}
+
+    - name: Build and push Web server image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./src/web-server/
+        push: true
+        tags: |
+          flensimdotcore/dcs-2025-2nd-achievement-web-server:latest
+          flensimdotcore/dcs-2025-2nd-achievement-web-server:${{ github.sha }}
