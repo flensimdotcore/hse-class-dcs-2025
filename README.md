@@ -36,9 +36,13 @@ Go to `src/` dir
 cd src
 ```
 
-Create .env file with following variable
+Create .env file with following variables (look at `src/.env.example` file)
 ```
-touch .env && echo "DATABASE_URL=postgresql://<YOUR_DATABASE_USERNAME>:<YOUR_DATABASE_PASSWORD>@numbers-db:5432/numbers_db" >> .env
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_HOST=
+POSTGRES_PORT=
 ```
 
 ```
