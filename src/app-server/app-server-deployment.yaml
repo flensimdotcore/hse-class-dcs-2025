@@ -21,10 +21,8 @@ spec:
       - name: app-server
         image: flensimdotcore/dcs-2025-2nd-achievement-app-server:latest
         env:
-        - name: DATABASE_URL
-          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
         - name: POSTGRES_HOST
-          value: "app-12-database"
+          value: app-12-database
         - name: POSTGRES_PORT
           value: "5432"
         - name: POSTGRES_DB

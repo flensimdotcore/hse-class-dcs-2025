@@ -1,57 +1,3 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: app-12-database
-  namespace: ns-12
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: app-12-database
-  template:
-    metadata:
-      labels:
-        app: app-12-database
-    spec:
-      # nodeSelector:
-      #   kubernetes.io/hostname: node-12
-      containers:
-      - name: postgres
-        image: postgres:13
-        env:
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: app-12-secrets
-              key: POSTGRES_DB
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: app-12-secrets
-              key: POSTGRES_USER
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-12-secrets
-              key: POSTGRES_PASSWORD
-        ports:
-        - containerPort: 5432
-        volumeMounts:
-        - name: db-data
-          mountPath: /var/lib/postgresql/data
-        - name: init-sql
-          mountPath: /docker-entrypoint-initdb.d
-      volumes:
-      - name: db-data
-        persistentVolumeClaim:
-          claimName: postgres-12-pvc
-      - name: init-sql
-        configMap:
-          name: app-12-config
-          items:
-          - key: INIT_SQL
-            path: init.sql
----
 apiVersion: v1
 kind: Service
 metadata:
@@ -59,8 +5,76 @@ metadata:
   namespace: ns-12
 spec:
   selector:
-    app: app-12-database
+    app: database
   ports:
   - port: 5432
     targetPort: 5432
   clusterIP: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-12-config
+  namespace: ns-12
+data:
+  INIT_SQL: |
+    CREATE TABLE IF NOT EXISTS processed_numbers (
+    id SERIAL PRIMARY KEY,
+    number INTEGER UNIQUE NOT NULL,
+    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_number ON processed_numbers(number);
+    CREATE INDEX IF NOT EXISTS idx_processed_at ON processed_numbers(processed_at);
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-12-database
+  namespace: ns-12
+spec:
+  serviceName: app-12-database
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: node-12
+      containers:
+      - name: postgres
+        image: postgres:14
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: app-12-secret
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-12-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-12-secret
+              key: POSTGRES_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+
+      volumes:
+      - name: db-data
+        emptyDir: {}

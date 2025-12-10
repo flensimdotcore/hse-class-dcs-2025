@@ -14,9 +14,7 @@ curl -X GET http://localhost:8000/health
 
 ## Post new number
 ```
-curl -X POST http://localhost:6000/process \
-  -H "Content-Type: application/json" \
-  -d '{"number": 5}'
+curl -X POST http://localhost:6000/process -H "Content-Type: application/json" -d '{"number": 5}'
 ```
 
 ## Get all numbers (debug)

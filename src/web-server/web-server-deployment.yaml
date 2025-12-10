@@ -28,25 +28,6 @@ spec:
         ports:
         - containerPort: 5000
           name: http
-        # readinessProbe:
-        #   httpGet:
-        #     path: /health  # или /ready
-        #     port: 5000
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 5
-        # livenessProbe:
-        #   httpGet:
-        #     path: /health  # или /live
-        #     port: 5000
-        #   initialDelaySeconds: 20
-        #   periodSeconds: 10
-        # resources:
-        #   requests:
-        #     memory: "128Mi"
-        #     cpu: "100m"
-        #   limits:
-        #     memory: "256Mi"
-        #     cpu: "200m"
 ---
 apiVersion: v1
 kind: Service
@@ -57,7 +38,7 @@ spec:
   selector:
     app: app-12-web-server
   ports:
-  - port: 5000
+  - port: 6000
     targetPort: 5000
     name: http
   type: ClusterIP
