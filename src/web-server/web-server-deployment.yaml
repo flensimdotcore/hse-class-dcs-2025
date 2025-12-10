@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-12-web-server
+  namespace: ns-12
+  labels:
+    app: app-12-web-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-12-web-server
+  template:
+    metadata:
+      labels:
+        app: app-12-web-server
+    spec:
+      containers:
+      - name: web-server
+        image: flensimdotcore/dcs-2025-2nd-achievement-web-server:latest
+        env:
+        - name: APP_SERVER_URL
+          value: "http://app-12-app-server:8000"
+        - name: WEB_PORT
+          value: "5000"
+        - name: WEB_HOST
+          value: "0.0.0.0"
+        ports:
+        - containerPort: 5000
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-12-web-server
+  namespace: ns-12
+spec:
+  selector:
+    app: app-12-web-server
+  ports:
+  - port: 6000
+    targetPort: 5000
+    name: http
+  type: ClusterIP

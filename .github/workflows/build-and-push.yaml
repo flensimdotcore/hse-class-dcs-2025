@@ -1,0 +1,37 @@
+name: Build, Push and Deploy Multicontainer App
+
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push App server image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./src/app-server/
+        push: true
+        tags: |
+          flensimdotcore/dcs-2025-2nd-achievement-app-server:latest
+          flensimdotcore/dcs-2025-2nd-achievement-app-server:${{ github.sha }}
+
+    - name: Build and push Web server image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./src/web-server/
+        push: true
+        tags: |
+          flensimdotcore/dcs-2025-2nd-achievement-web-server:latest
+          flensimdotcore/dcs-2025-2nd-achievement-web-server:${{ github.sha }}

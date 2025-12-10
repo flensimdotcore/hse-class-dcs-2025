@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-12-pv
+  namespace: ns-12
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: "/data/postgres"
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-12-pvc
+  namespace: ns-12
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
+  volumeName: postgres-12-pv

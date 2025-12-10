@@ -23,5 +23,5 @@ spec:
         env:
         - name: MESSAGE
           value: "Hello, World!"
-        command: ["/bin/sh"]
-        args: ["-c", 'while true; do echo "$MESSAGE"; sleep 30; done']
+        command: [ "/bin/sh" ]
+        args: [ "-c", 'while true; do echo "$MESSAGE"; sleep 30; done' ]
